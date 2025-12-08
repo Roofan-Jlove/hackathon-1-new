@@ -1,0 +1,95 @@
+---
+sidebar_position: 3
+title: 'Week 12: Integrating VLA with a Simulated Robot'
+---
+
+# Week 12: Integrating VLA with a Simulated Robot
+
+Last week, we built a standalone Python script for a basic Vision-Language-Action (VLA) pipeline. This week, we'll take that conceptual understanding and integrate it with our simulated robot in NVIDIA Isaac Sim using ROS 2. The goal is to enable a human operator to issue natural language commands and have the robot respond intelligently within the simulation.
+
+## Connecting VLA to ROS 2
+
+To make our VLA pipeline robust and scalable within a robotics ecosystem, we will modularize it into separate ROS 2 nodes. Each node will handle a specific part of the VLA process, communicating via ROS 2 topics.
+
+### 1. Vision Node (`vision_node.py`)
+
+-   **Purpose**: Subscribes to raw camera images from the robot, processes them using a vision model (e.g., YOLOv8), and publishes structured object detections.
+-   **Subscriptions**: `/robot/camera/image_raw` (`sensor_msgs/msg/Image`)
+-   **Publications**: `/robot/detected_objects` (Custom `DetectionArray` message)
+
+### 2. Language & Grounding Node (`language_grounding_node.py`)
+
+-   **Purpose**: Subscribes to human language commands and object detections, then grounds the command to a specific detected object in the environment.
+-   **Subscriptions**:
+    -   `/human_command` (`std_msgs/msg/String`)
+    -   `/robot/detected_objects` (Custom `DetectionArray` message)
+-   **Publications**: `/robot/grounded_command` (Custom `GroundedCommand` message)
+
+### 3. Action Node (`action_node.py`)
+
+-   **Purpose**: Receives grounded commands and translates them into low-level robot control commands (e.g., velocity commands for a differential drive robot).
+-   **Subscriptions**: `/robot/grounded_command` (Custom `GroundedCommand` message)
+-   **Publications**: `/robot/cmd_vel` (`geometry_msgs/msg/Twist`)
+
+## Simulated Robot Control
+
+We will use our existing Isaac Sim setup from Week 8, featuring a differential drive robot with a camera. The `action_node.py` will publish `Twist` messages to the `/robot/cmd_vel` topic, directly controlling the simulated robot's movement.
+
+## Human Interface
+
+For now, the human operator will simply publish `std_msgs/msg/String` messages to the `/human_command` topic using `ros2 topic pub`. In a more advanced system, this could be a GUI or a voice interface.
+
+## Hands-On Lab: Natural Language Control of a Robot
+
+### Goal
+
+Control a simulated robot in Isaac Sim by issuing natural language commands like "go to the red cube" or "approach the blue sphere."
+
+### Setup
+
+1.  Ensure you have your Isaac Sim environment from Week 8 running with a robot equipped with a camera, publishing `Image` messages to ROS 2.
+2.  Your Isaac Sim robot should also be configured with a differential drive controller subscribing to `/robot/cmd_vel`.
+3.  We will need to define custom ROS 2 messages for `DetectionArray` and `GroundedCommand`. For simplicity in this lab, you can assume basic Python classes or dictionaries are passed between nodes if you prefer not to delve into custom message definitions yet. For a fully compliant ROS 2 system, these would be `.msg` files.
+
+### Lab Steps
+
+1.  **Create Custom Message Definitions (Conceptual for now, will be covered in depth later)**:
+    - `Detection.msg`: `string class_name`, `float32 confidence`, `geometry_msgs/Point center_2d`
+    - `DetectionArray.msg`: `std_msgs/Header header`, `Detection[] detections`
+    - `GroundedCommand.msg`: `string action`, `string target_object_class`, `geometry_msgs/Point target_object_location_2d`
+
+2.  **`vision_node.py`**:
+    - Adapt the `detect_objects` logic from Week 11.
+    - Create a ROS 2 node that subscribes to `/robot/camera/image_raw`.
+    - In its callback, convert the `Image` message to an OpenCV image, run YOLOv8 detection, and publish a `DetectionArray` message.
+
+3.  **`language_grounding_node.py`**:
+    - Adapt the `parse_command` and `ground_object` logic from Week 11.
+    - Create a ROS 2 node that subscribes to `/human_command` and `/robot/detected_objects`.
+    - When a new command arrives, it uses the latest detections to ground the command and publishes a `GroundedCommand`.
+
+4.  **`action_node.py`**:
+    - Adapt the `formulate_action` logic from Week 11.
+    - Create a ROS 2 node that subscribes to `/robot/grounded_command`.
+    - Based on the `action` and `target_object_location_2d`, it publishes a `geometry_msgs/msg/Twist` message to `/robot/cmd_vel` to guide the robot towards the target. (e.g., a simple proportional controller to move towards the center of the bounding box).
+
+5.  **Launch File**:
+    - Create a ROS 2 launch file (`vla_robot.launch.py`) that:
+        - Launches Isaac Sim with your robot (from Week 8).
+        - Launches the `vision_node`, `language_grounding_node`, and `action_node`.
+
+6.  **Interact**:
+    - Launch the entire system: `ros2 launch your_vla_package vla_robot.launch.py`
+    - In a separate terminal, send commands:
+        ```bash
+        ros2 topic pub /human_command std_msgs/msg/String "data: 'go to the red cube'"
+        ros2 topic pub /human_command std_msgs/msg/String "data: 'approach the blue sphere'"
+        ```
+    - Observe your robot in Isaac Sim responding to your natural language commands!
+
+## Exercises
+
+1.  Implement the custom ROS 2 message definitions (`Detection.msg`, `DetectionArray.msg`, `GroundedCommand.msg`) in a new package and integrate them into your nodes.
+2.  Improve the `action_node` to handle obstacle avoidance, even if rudimentary, when moving towards a target.
+3.  Add a text-to-speech feedback mechanism: After receiving a command, the robot (e.g., the `action_node`) publishes a `std_msgs/msg/String` to a `/robot/speech` topic, which could be played by a simple audio node.
+4.  Consider how to handle ambiguous commands (e.g., "go to the cube" when multiple cubes are present). How would you make the robot ask for clarification?

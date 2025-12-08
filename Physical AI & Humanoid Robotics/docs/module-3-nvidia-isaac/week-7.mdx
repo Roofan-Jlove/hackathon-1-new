@@ -1,0 +1,70 @@
+---
+sidebar_position: 1
+title: 'Week 7: Introduction to NVIDIA Isaac Sim'
+---
+
+# Week 7: Introduction to NVIDIA Isaac Sim
+
+We've mastered Gazebo for basic robot simulation. However, for cutting-edge robotics research, especially involving AI, large-scale environments, or highly accurate physics, Gazebo sometimes falls short. This week, we introduce **NVIDIA Isaac Sim**, a powerful, GPU-accelerated simulation platform built on NVIDIA Omniverse.
+
+## Beyond Gazebo: Why Isaac Sim?
+
+While Gazebo is excellent for traditional ROS-based robotics, Isaac Sim pushes the boundaries of what's possible in simulation:
+
+-   **Photorealistic Rendering**: Powered by NVIDIA RTX technology, Isaac Sim provides highly realistic visuals, crucial for training vision-based AI models.
+-   **Advanced Physics**: Utilizes NVIDIA PhysX 5, offering highly accurate and stable rigid-body and deformable body physics.
+-   **Scalability**: Built for large-scale environments and multi-robot simulations.
+-   **Synthetic Data Generation (SDG)**: Its most significant advantage for AI. Isaac Sim can generate vast amounts of diverse, labeled data (e.g., depth maps, segmentation masks, bounding boxes) automatically, which is invaluable for training robust deep learning models.
+-   **Native ROS 2 Support**: Deep integration with ROS 2, allowing seamless communication between simulation and real-world robot code.
+-   **Python-based**: Scriptable and extensible using Python, leveraging Omniverse Kit APIs.
+
+## Key Features of Isaac Sim
+
+-   **Omniverse Platform**: Isaac Sim is an application built on NVIDIA Omniverse, a platform for virtual world simulation and collaboration.
+-   **USD (Universal Scene Description)**: The core data format for everything in Omniverse. USD is a powerful, extensible format for scene description, originally developed by Pixar.
+-   **Python API**: Almost every aspect of Isaac Sim can be controlled and automated via its Python API.
+-   **ROS 2 Bridge**: A robust bridge for ROS 2 communication, supporting topics, services, actions, and TF.
+
+## Installation and Setup (Requires NVIDIA GPU!)
+
+Isaac Sim is a demanding application and requires specific hardware:
+-   **NVIDIA RTX GPU**: An NVIDIA graphics card with RTX capabilities (e.g., RTX 20-series, 30-series, 40-series). The more VRAM, the better.
+-   **Omniverse Launcher**: You install Isaac Sim via the NVIDIA Omniverse Launcher.
+
+**Installation Steps (High-Level):**
+
+1.  Install NVIDIA GPU drivers.
+2.  Install the NVIDIA Omniverse Launcher.
+3.  From the Launcher, install "Omniverse Kit" and then "Isaac Sim."
+
+It's a complex installation, so refer to the [official Isaac Sim documentation](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html) for detailed, up-to-date instructions.
+
+## First Steps in Isaac Sim
+
+1.  **Launch Isaac Sim**: Start Isaac Sim from the Omniverse Launcher.
+2.  **UI Navigation**: You'll see a 3D viewport, a "Stage" panel (showing the USD hierarchy), and a "Property" panel (for selected objects).
+3.  **Basic Manipulation**: You can add primitives (e.g., a cube) from the "Create" menu and manipulate them (move, rotate, scale) using the tools in the toolbar.
+4.  **Enabling ROS 2 Extensions**: Go to `Window -> Extensions`, search for "ROS" and enable the `omni.isaac.ros2_bridge` extension. This activates the ROS 2 communication.
+
+## Hands-On Lab: Your First Isaac Sim Stage
+
+1.  **Launch Isaac Sim** and open a new empty stage.
+2.  **Enable `omni.isaac.ros2_bridge` extension** if not already enabled.
+3.  **Add a simple Cube**: Go to `Create -> Cube`. Place it on the ground.
+4.  **Publish its Transform to ROS 2**: Isaac Sim can publish the pose of any object as a TF (Transform) message.
+    - Select the cube in the Stage panel.
+    - In the Property panel, add a `ROS 2 Publish Transform` component (search for "ROS" in the "Add Component" button).
+    - Set the `Topic Name` (e.g., `/my_cube_tf`) and `Frame ID` (e.g., `cube_base`).
+    - Make sure the `Parent Frame ID` is set to `world`.
+5.  **Visualize in RViz2**:
+    - Open a terminal and source your ROS 2 environment.
+    - Launch RViz2: `ros2 run rviz2 rviz2`.
+    - In RViz2, add a `TF` display. You should now see the `cube_base` frame appear.
+    - Add a `Marker` display (or `RobotModel` if you use a full URDF) and configure it to visualize your cube based on the TF data.
+
+## Exercises
+
+1.  Change the material properties of the cube in Isaac Sim (e.g., color, roughness).
+2.  Move the cube around in Isaac Sim. Watch how its transform updates in RViz2.
+3.  What is USD, and why is it a powerful format for simulation platforms like Isaac Sim?
+4.  What are the main advantages of using Isaac Sim for training AI models compared to Gazebo?

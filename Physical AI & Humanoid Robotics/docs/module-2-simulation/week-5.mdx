@@ -1,0 +1,176 @@
+---
+sidebar_position: 2
+title: 'Week 5: Building and Simulating a Robot'
+---
+
+# Week 5: Building and Simulating Your First Robot
+
+Last week, we explored the Gazebo world. This week, we'll populate that world with a robot that we can control through ROS 2. To do this, we need to learn how to describe a robot in a format that ROS understands.
+
+## From SDF to URDF
+
+While Gazebo uses SDF to describe everything in the simulation, the standard format for describing a robot's structure in the ROS ecosystem is the **Unified Robot Description Format (URDF)**.
+
+-   **SDF (Simulation Description Format)**: Describes the entire world, including robots, lights, physics, and static objects. It's Gazebo-native.
+-   **URDF (Unified Robot Description Format)**: Describes only the robot. It defines the robot's links (its physical parts), joints (how the parts connect), and visual appearance. It is a pure XML format and is central to the entire ROS toolchain (like RViz and MoveIt).
+
+For our purposes, we will define our robot in URDF and then use tools to spawn it into the Gazebo simulation. Gazebo converts the URDF to SDF internally.
+
+## Creating a Simple Wheeled Robot URDF
+
+A URDF file is composed of `<link>` and `<joint>` elements.
+
+-   **`<link>`**: A physical part of the robot. It has properties like visual appearance (`<visual>`), collision geometry (`<collision>`), and inertial properties (`<inertial>`).
+-   **`<joint>`**: Defines the kinematic and dynamic properties of the connection between two links. Common types are `revolute` (for wheels), `continuous`, `prismatic`, and `fixed`.
+
+Let's create a file named `simple_robot.urdf` in a `models` directory within your package.
+
+```xml
+<!-- models/simple_robot.urdf -->
+<robot name="simple_wheeled_robot">
+  <!-- Base Link (Chassis) -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.4 0.2 0.1"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.4 0.2 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Wheel Link -->
+  <link name="right_wheel_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Wheel Joint -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <origin xyz="0.0 -0.15 0.0" rpy="1.5707 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Left Wheel (similar to right wheel) -->
+  <!-- ... link and joint for left_wheel -->
+
+</robot>
+```
+*Note: The left wheel definitions are omitted for brevity but would be very similar to the right wheel, just with a positive `y` offset in the joint's origin.*
+
+## Controlling the Robot with Gazebo Plugins
+
+Our URDF describes the robot's shape, but not how it moves. To control our robot in Gazebo using ROS 2 messages, we need to add a **Gazebo Plugin**.
+
+We'll use the `gazebo_ros_diff_drive` plugin, which simulates a differential drive controller. This plugin subscribes to a `/cmd_vel` topic (of type `geometry_msgs/Twist`) and converts the linear and angular velocities into wheel motor commands inside the simulation.
+
+We add the plugin to our URDF file inside a `<gazebo>` tag:
+
+```xml
+<!-- Add this inside the <robot> tag -->
+<gazebo>
+  <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+    <ros>
+      <namespace>/</namespace>
+    </ros>
+    
+    <!-- wheels -->
+    <left_joint>left_wheel_joint</left_joint>
+    <right_joint>right_wheel_joint</right_joint>
+
+    <!-- kinematics -->
+    <wheel_separation>0.3</wheel_separation>
+    <wheel_diameter>0.1</wheel_diameter>
+
+    <!-- limits -->
+    <max_wheel_torque>20</max_wheel_torque>
+    <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+    <!-- output -->
+    <publish_odom>true</publish_odom>
+    <publish_tf>true</publish_tf>
+
+    <odometry_frame>odom</odometry_frame>
+    <robot_base_frame>base_link</robot_base_frame>
+  </plugin>
+</gazebo>
+```
+
+## Spawning the Robot with a Launch File
+
+Now we need a launch file to bring up Gazebo and spawn our robot model into it.
+
+```python
+# launch/spawn_robot.launch.py
+import os
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
+
+def generate_launch_description():
+    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    pkg_py_hello_world = get_package_share_directory('py_hello_world')
+
+    # Start Gazebo server
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py'),
+        )
+    )
+
+    # Get the URDF file
+    urdf_file = os.path.join(pkg_py_hello_world, 'models', 'simple_robot.urdf')
+
+    # Spawn the robot
+    spawn_entity = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=['-topic', 'robot_description', '-entity', 'simple_robot'],
+        output='screen'
+    )
+    
+    # ... Plus a node to publish the robot description from the URDF file
+
+    return LaunchDescription([
+        gazebo,
+        spawn_entity,
+        # ... robot_state_publisher node
+    ])
+```
+
+## Hands-On Lab: Drive Your Robot
+
+1.  Complete the `simple_robot.urdf` file with the definitions for the left wheel and the differential drive plugin.
+2.  Create the `spawn_robot.launch.py` file. (Note: You will also need a `robot_state_publisher` node to publish the URDF to the `/robot_description` topic. This is a standard node in ROS 2.)
+3.  Build your workspace with `colcon build` and source it.
+4.  Run the launch file: `ros2 launch py_hello_world spawn_robot.launch.py`. You should see your robot appear in Gazebo.
+5.  Open a new terminal, source your workspace, and use the `ros2 topic pub` command to send a velocity command. To make it drive forward:
+    ```bash
+    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}" -1
+    ```
+    Your robot should start moving in Gazebo! To make it spin, publish to `angular.z`.
+
+## Exercises
+
+1.  Modify your URDF file to change the color of the robot's chassis to green.
+2.  In the launch file, change the starting position of the robot to `x=2.0`.
+3.  What is the difference between a URDF `<visual>` tag and a `<collision>` tag? Why is it useful to have both?

@@ -1,0 +1,73 @@
+---
+sidebar_position: 3
+title: 'Week 9: Advanced Perception & Synthetic Data with Isaac Sim'
+---
+
+# Week 9: Advanced Perception & Synthetic Data with Isaac Sim
+
+In previous weeks, we've focused on simulating basic robot behaviors and reading raw sensor data. This week, we'll leverage one of Isaac Sim's most powerful features: **Synthetic Data Generation (SDG)**. SDG allows us to generate massive, perfectly labeled datasets directly from the simulator, which is invaluable for training robust AI perception models.
+
+## The Power of Synthetic Data Generation
+
+Training effective AI models for perception (e.g., object detection, semantic segmentation) typically requires huge amounts of meticulously labeled real-world data. This data collection and annotation process is incredibly time-consuming, expensive, and often error-prone.
+
+Synthetic Data Generation from simulation offers several key advantages:
+
+-   **Infinite Data**: Generate as much data as you need, covering diverse environments, lighting conditions, and object variations.
+-   **Perfect Labels**: Every pixel, every object, every bounding box is perfectly known and precisely labeled, eliminating human annotation errors.
+-   **Edge Cases**: Easily simulate rare or dangerous scenarios (e.g., specific lighting, occlusions, extreme weather) that are hard to capture in the real world.
+-   **Cost-Effective**: Dramatically reduces the cost and time associated with data collection and labeling.
+-   **Privacy**: Avoids privacy concerns associated with real-world image or video data.
+
+## Isaac Sim's SDG Capabilities
+
+Isaac Sim, built on Omniverse, provides a comprehensive set of **Annotators** that can be attached to any camera sensor. These annotators generate different types of ground truth data.
+
+### Key Annotators:
+
+-   **Semantic Segmentation**: Labels each pixel with a class ID (e.g., "robot," "table," "wall").
+-   **Instance Segmentation**: Labels each pixel with a unique instance ID for individual objects of the same class.
+-   **Bounding Box 2D/3D**: Generates axis-aligned bounding boxes (AABBs) around objects in 2D (image space) or 3D (world space).
+-   **Depth**: Provides the distance from the camera to each pixel.
+-   **Distance to Camera**: Similar to depth but can be configured differently.
+-   **LIDAR**: Can generate point clouds with semantic labels.
+
+### How to Use Annotators
+
+1.  **Add a Camera**: Ensure your robot has a camera attached.
+2.  **Add Annotator Components**: Select the camera in the Stage panel. In the Property tab, use the "Add Component" button and search for "Annotator". Add the desired annotators (e.g., `Isaac Read Semantic Segmentation`, `Isaac Read Bounding Box 2D`).
+3.  **Configure**: Each annotator has parameters (e.g., output topic for ROS 2).
+
+## ROS 2 and SDG
+
+Isaac Sim can publish the output of these annotators directly to ROS 2 topics. For example:
+
+-   **Semantic Segmentation**: Often published as an `sensor_msgs/Image` with pixel values corresponding to class IDs.
+-   **Bounding Box 2D**: Published as custom ROS 2 messages (e.g., `vision_msgs/Detection2DArray`).
+
+This allows you to easily integrate the synthetic data directly into your ROS 2 perception pipelines for training or testing.
+
+## Hands-On Lab: Perceiving the Simulated World
+
+1.  **Load a Complex Scene**: Open Isaac Sim and load a more complex stage (e.g., one of the built-in `Warehouse` or `Factory` environments).
+2.  **Spawn a Robot with a Camera**: Add a simple robot (e.g., a differential drive robot) and attach a camera to it.
+3.  **Add Annotators**:
+    -   Select your camera.
+    -   In the Property tab, click "Add Component" and search for "Annotator".
+    -   Add `Isaac Read Semantic Segmentation`.
+    -   Add `Isaac Read Bounding Box 2D`.
+4.  **Configure ROS 2 Publishing**:
+    -   Enable the ROS 2 bridge extension.
+    -   For each annotator, find its properties (e.g., `output: semantic_segmentation:raw`). Add a `ROS2 Publish Image` component to the `Semantic Segmentation` output and a `ROS2 Publish Bounding Box 2D Array` component for the bounding box output. Configure their respective ROS 2 topics (e.g., `/robot/camera/semantic_segmentation`, `/robot/camera/bounding_boxes`).
+5.  **Visualize in RViz2**:
+    -   Launch RViz2 in a ROS 2 terminal.
+    -   Add an `Image` display and subscribe to `/robot/camera/image_raw` (the raw camera feed).
+    -   Add another `Image` display and subscribe to `/robot/camera/semantic_segmentation`. You should see the scene classified pixel by pixel.
+    -   Add a `MarkerArray` display (if using custom messages) or similar display for bounding boxes.
+    -   Drive your robot around the scene and observe how the raw image, semantic segmentation, and bounding boxes update dynamically.
+
+## Exercises
+
+1.  Experiment with the `Bounding Box 3D` annotator. How does it differ from `Bounding Box 2D`? How would you visualize this in RViz2?
+2.  Load different objects into your scene (e.g., from the Omniverse Asset Store). Does the semantic segmentation correctly identify new object types?
+3.  How can SDG with Isaac Sim help you overcome data scarcity issues when training a deep learning model for robot manipulation tasks?

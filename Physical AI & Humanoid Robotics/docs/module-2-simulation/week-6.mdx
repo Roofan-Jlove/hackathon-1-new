@@ -1,0 +1,158 @@
+---
+sidebar_position: 3
+title: 'Week 6: Plugins, Sensors, and Worlds'
+---
+
+# Week 6: Advanced Gazebo - World Building, Plugins, and Sensors
+
+We now have a robot that drives around in an empty world. To make our simulations more useful, we need to build more realistic environments and give our robot sensors to perceive that environment. This week, we'll learn how to build a custom world, add sensors to our robot, and visualize the sensor data in RViz2, the primary ROS 2 visualization tool.
+
+## Building a World with SDF
+
+Just as we used URDF to describe our robot, we use **SDF** to describe the entire simulation world. A `.world` file is an SDF file that contains everything: the lighting, the physics properties, and models for all the objects in the environment.
+
+Let's create a simple world with a few walls.
+
+```xml
+<!-- worlds/test_arena.world -->
+<sdf version='1.7'>
+  <world name='default'>
+    <light name='sun' type='directional'>
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+    </light>
+
+    <model name='ground_plane'>
+      <static>true</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name='visual'>
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name='wall_1'>
+      <pose>0 5 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='collision'><geometry><box><size>10 0.2 1</size></box></geometry></collision>
+        <visual name='visual'><geometry><box><size>10 0.2 1</size></box></geometry></visual>
+      </link>
+      <static>true</static>
+    </model>
+    
+    <!-- Add 3 more walls to create a box -->
+
+  </world>
+</sdf>
+```
+To use this world, we modify our launch file to pass it as an argument when we launch Gazebo.
+
+## Adding Sensors with Gazebo Plugins
+
+A robot is blind without sensors. We can add sensors to our robot by adding more plugins to our URDF file.
+
+### Camera Plugin
+
+The `gazebo_ros_camera` plugin simulates a camera. It can be attached to a link on our robot and will publish images to a ROS 2 topic.
+
+```xml
+<!-- Add a camera link to the robot -->
+<link name="camera_link">
+  <visual>
+    <geometry><box size="0.02 0.05 0.05"/></geometry></visual>
+  </collision>
+</link>
+<joint name="camera_joint" type="fixed">
+  <parent link="base_link"/>
+  <child link="camera_link"/>
+  <origin xyz="0.2 0 0.05" rpy="0 0 0"/>
+</joint>
+
+<!-- Add the camera plugin -->
+<gazebo reference="camera_link">
+  <sensor type="camera" name="my_camera">
+    <update_rate>30.0</update_rate>
+    <camera>
+      <horizontal_fov>1.396</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <ros>
+        <namespace>/</namespace>
+        <remapping>image_raw:=image_raw</remapping>
+      </ros>
+    </plugin>
+  </sensor>
+</gazebo>
+```
+This plugin will publish images on the `/image_raw` topic.
+
+### LiDAR Plugin
+
+The `gazebo_ros_ray_sensor` plugin simulates a laser scanner (LiDAR). It works by casting "rays" into the environment and measuring the distance to the first object they hit.
+
+```xml
+<!-- Add the LiDAR plugin, attached to the base_link -->
+<gazebo reference="base_link">
+  <sensor type="ray" name="lidar">
+    <update_rate>10</update_rate>
+    <ray>
+      <scan>
+        <horizontal>
+          <samples>360</samples>
+          <resolution>1</resolution>
+          <min_angle>-3.14</min_angle>
+          <max_angle>3.14</max_angle>
+        </horizontal>
+      </scan>
+    </ray>
+    <plugin name="lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+      <ros>
+        <namespace>/</namespace>
+        <remapping>~/out:=scan</remapping>
+      </ros>
+      <output_type>sensor_msgs/LaserScan</output_type>
+      <frame_name>base_link</frame_name>
+    </plugin>
+  </sensor>
+</gazebo>
+```
+This plugin will publish `sensor_msgs/LaserScan` messages on the `/scan` topic.
+
+## Visualizing Sensor Data with RViz2
+
+The Gazebo GUI shows us the "truth" of the simulation. However, our robot's algorithms don't see this perfect world view. They only see the data from their sensors. To debug our algorithms, we need to see what the robot sees. This is the job of **RViz2**.
+
+RViz2 is the primary visualization tool in ROS 2. It subscribes to any topic and displays the data in a 3D environment.
+
+To launch it: `ros2 run rviz2 rviz2`
+
+Once open, you can:
+-   Click the "Add" button in the bottom-left.
+-   Select the type of data you want to visualize (e.g., "Image", "LaserScan", "RobotModel").
+-   In the display's properties, set the "Topic" to the one you want to visualize.
+
+## Hands-On Lab: Building a Perceptive Robot
+
+1.  Create the `test_arena.world` file and add four walls to make a closed box.
+2.  Modify your `simple_robot.urdf` to include the `camera_link` and the two sensor plugins (camera and LiDAR).
+3.  Update your `spawn_robot.launch.py` to launch Gazebo with your new world file.
+4.  Launch the system. In Gazebo, you should see your robot inside the box arena.
+5.  In a new terminal, launch RViz2: `ros2 run rviz2 rviz2`.
+6.  In RViz2, add an **Image** display and subscribe to the `/image_raw` topic. You should see a first-person view from your robot's camera.
+7.  Add a **LaserScan** display and subscribe to the `/scan` topic. You should see points representing the walls detected by the LiDAR.
+8.  Use `ros2 topic pub` to drive your robot around and watch the sensor data change in RViz2.
+
+## Exercises
+
+1.  In your URDF, change the `<update_rate>` of the camera plugin to `1.0`. How does this affect the image display in RViz2?
+2.  In the LaserScan display in RViz2, change the "Style" from "Points" to "Spheres".
+3.  Why is it more useful to debug a navigation algorithm using RViz2 instead of the main Gazebo window?

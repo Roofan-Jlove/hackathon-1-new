@@ -1,0 +1,178 @@
+---
+sidebar_position: 2
+title: 'Week 11: Building a Basic VLA Pipeline'
+---
+
+# Week 11: Building a Basic VLA Pipeline
+
+Last week, we explored the theoretical underpinnings of Vision-Language-Action (VLA) systems. This week, we'll get practical and build a rudimentary VLA pipeline in Python, connecting a simple vision module with a basic language understanding component to infer a robot's desired action.
+
+## A Simple VLA Workflow
+
+Our basic VLA pipeline will follow these steps:
+
+1.  **Image Input**: Receive an image (e.g., from a simulated camera).
+2.  **Vision Model**: Process the image to detect objects, their locations, and properties (e.g., color, class).
+3.  **Text Input**: Receive a natural language command (e.g., "pick up the red cube").
+4.  **Language Model**: Extract the intended action and target object from the command.
+5.  **Grounding**: Match the target object from the command to a detected object from the vision model.
+6.  **Action**: Based on the grounded object and action, formulate a simple robot instruction.
+
+## Vision Component: Object Detection with YOLOv8
+
+For our vision component, we'll use a pre-trained YOLOv8 model, a state-of-the-art object detection algorithm known for its speed and accuracy. We'll use the `ultralytics` library, which makes integrating YOLOv8 very straightforward.
+
+```python
+# pip install ultralytics
+from ultralytics import YOLO
+import cv2
+
+# Load a pre-trained YOLOv8n model (nano version)
+model = YOLO('yolov8n.pt')
+
+def detect_objects(image_path):
+    img = cv2.imread(image_path)
+    if img is None:
+        raise FileNotFoundError(f"Image not found at {image_path}")
+
+    results = model(img) # Run inference on the image
+
+    detections = []
+    for r in results:
+        for box in r.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            confidence = float(box.conf[0])
+            class_id = int(box.cls[0])
+            class_name = model.names[class_id]
+            detections.append({
+                "class": class_name,
+                "confidence": confidence,
+                "bbox": [x1, y1, x2, y2]
+            })
+    return detections
+
+# Example usage:
+# detections = detect_objects("path/to/your/image.jpg")
+# print(detections)
+```
+This function will return a list of dictionaries, each describing a detected object with its class, confidence, and bounding box coordinates.
+
+## Language Component: Simple Keyword Matching
+
+For the language component, we'll start with a very simple keyword matching approach to parse commands. This is a rudimentary form of Natural Language Understanding (NLU).
+
+```python
+def parse_command(command_text):
+    command_text = command_text.lower()
+    action = None
+    target_object = None
+
+    if "pick up" in command_text or "grasp" in command_text:
+        action = "pick_up"
+    elif "move to" in command_text or "go to" in command_text:
+        action = "move_to"
+    elif "put down" in command_text or "release" in command_text:
+        action = "put_down"
+    
+    # Simple object extraction (can be improved)
+    objects_of_interest = ["red cube", "blue sphere", "green cylinder", "ball"] # Example objects
+    for obj in objects_of_interest:
+        if obj in command_text:
+            target_object = obj
+            break # Assume first match is the intended one
+
+    return {"action": action, "object": target_object}
+
+# Example usage:
+# command = parse_command("Please pick up the red cube")
+# print(command) # {'action': 'pick_up', 'object': 'red cube'}
+```
+
+## Grounding Component
+
+The grounding component connects the linguistic understanding (the `target_object` from the command) with the visual detections. For now, we'll match by class name. More advanced grounding would involve color, relative position, or other visual attributes.
+
+```python
+def ground_object(command_object, detections):
+    if not command_object:
+        return None
+
+    # Simple matching: check if command object name is in detected object class
+    for detected_obj in detections:
+        if command_object.lower() in detected_obj["class"].lower():
+            return detected_obj # Return the first matching detected object
+    return None
+
+# Example:
+# command_obj = "cube"
+# detected_items = [{'class': 'red cube', ...}, {'class': 'blue sphere', ...}]
+# grounded_obj = ground_object(command_obj, detected_items)
+```
+
+## Action Component: Formulating a Robot Instruction
+
+Finally, the action component translates the grounded understanding into a robot-executable instruction. Since we don't have a real robot arm here, we'll print a conceptual action.
+
+```python
+def formulate_action(action, grounded_object):
+    if action == "pick_up" and grounded_object:
+        bbox = grounded_object["bbox"]
+        # In a real robot, we would convert bbox to 3D coordinates for grasping
+        return f"ROBOT ACTION: Move arm to grasp object '{grounded_object['class']}' at screen position {bbox}"
+    elif action == "move_to" and grounded_object:
+        return f"ROBOT ACTION: Navigate to vicinity of object '{grounded_object['class']}'"
+    elif action is None and grounded_object:
+        return f"ROBOT ACTION: Observe object '{grounded_object['class']}'"
+    else:
+        return "ROBOT ACTION: Unrecognized command or no target object."
+
+# Example usage:
+# print(formulate_action("pick_up", grounded_obj))
+```
+
+## Hands-On Lab: Your First VLA Script
+
+1.  **Install Libraries**:
+    ```bash
+    pip install ultralytics opencv-python Pillow
+    ```
+2.  **Download Sample Image**: Find a sample image with objects (e.g., a few common objects on a table) or use an image from your Isaac Sim camera.
+3.  **Create `vla_pipeline.py`**: Combine the functions above into a single script.
+    ```python
+    # vla_pipeline.py
+    import cv2
+    from ultralytics import YOLO
+
+    # ... (paste detect_objects, parse_command, ground_object, formulate_action functions here) ...
+
+    def main():
+        image_path = "path/to/your/sample_image.jpg" # Update this path
+        command_text = input("Enter your command: ")
+
+        # 1. Vision: Detect objects
+        detections = detect_objects(image_path)
+        print(f"Detected: {detections}")
+
+        # 2. Language: Parse command
+        parsed_cmd = parse_command(command_text)
+        print(f"Parsed command: {parsed_cmd}")
+
+        # 3. Grounding: Match command to detections
+        grounded_obj = ground_object(parsed_cmd["object"], detections)
+        print(f"Grounded object: {grounded_obj}")
+
+        # 4. Action: Formulate robot instruction
+        robot_instruction = formulate_action(parsed_cmd["action"], grounded_obj)
+        print(robot_instruction)
+
+    if __name__ == '__main__':
+        main()
+    ```
+4.  **Run and Test**: Run your script and experiment with different images and commands.
+
+## Exercises
+
+1.  Enhance the `parse_command` function to extract colors (e.g., "red", "blue") and incorporate them into the `target_object` for more precise grounding.
+2.  Modify the `ground_object` function to consider both object class and color for matching.
+3.  Explore how you might integrate a more advanced Natural Language Processing (NLP) model (e.g., from Hugging Face Transformers) instead of simple keyword matching to parse commands.
+4.  How could you represent the detected objects in 3D space if you had depth information from a sensor?

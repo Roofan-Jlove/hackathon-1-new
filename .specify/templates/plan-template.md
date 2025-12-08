@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Technical Accuracy**: Does the plan rely on factually correct assumptions about the technologies involved?
+- [ ] **Clarity and Accessibility**: Is the technical plan clearly explained for a developer audience?
+- [ ] **Consistency**: Does the proposed structure adhere to existing project conventions?
+- [ ] **Practicality**: Is the plan achievable with the given resources and constraints? Are the proposed solutions directly implementable?
+- [ ] **Traceability**: Are decisions and their justifications clearly linked to requirements and official documentation where applicable?
 
 ## Project Structure
 

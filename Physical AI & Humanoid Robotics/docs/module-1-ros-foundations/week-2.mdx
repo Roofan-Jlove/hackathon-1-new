@@ -1,0 +1,188 @@
+---
+sidebar_position: 2
+title: 'Week 2: Deeper Dive into Nodes & Topics'
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Week 2: A Deeper Dive into Nodes, Topics, and Services
+
+Last week, we introduced the high-level concepts of ROS 2. This week, we get our hands dirty. We'll take our "Hello, World!" example, turn it into a proper ROS 2 package, build it, and learn how to use command-line tools to inspect what's happening under the hood.
+
+## The Anatomy of a ROS 2 Package
+
+In ROS 2, code is organized into **packages**. A package is simply a directory containing your source code along with a few special files that describe it.
+
+Let's create a package for our talker and listener nodes.
+
+1.  **Create a Workspace**: A workspace (`ws`) is a directory where you keep and build your ROS 2 packages.
+    ```bash
+    mkdir -p ros2_ws/src
+    cd ros2_ws
+    ```
+
+2.  **Create the Package**: Navigate into the `src` directory and use the `ros2 pkg create` command.
+    ```bash
+    cd src
+    ros2 pkg create --build-type ament_python --node-name talker py_hello_world
+    ros2 pkg create --build-type ament_python --node-name listener py_hello_world
+    ```
+    This command creates a new directory called `py_hello_world` with the following structure:
+    - `package.xml`: An XML file containing metadata about the package (name, version, dependencies).
+    - `setup.py`: A Python script for building and installing the package.
+    - `resource/`: A folder to mark the package location.
+    - `py_hello_world/`: The Python package directory where your node scripts will live.
+
+### `package.xml`
+
+This file is crucial. It declares the package's name, version, description, and, most importantly, its dependencies. For our simple package, we need to add a dependency on `rclpy` and `std_msgs`.
+
+```xml
+<!-- package.xml -->
+<package format="3">
+  <name>py_hello_world</name>
+  <version>0.0.0</version>
+  <description>A simple talker/listener example</description>
+  <maintainer email="user@example.com">Your Name</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+```
+
+### `setup.py`
+
+This file tells ROS 2 how to build and install your package. You need to specify your nodes as `entry_points` so ROS 2 can find and execute them.
+
+```python
+# setup.py
+from setuptools import find_packages, setup
+
+package_name = 'py_hello_world'
+
+setup(
+    name=package_name,
+    version='0.0.0',
+    packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='Your Name',
+    maintainer_email='user@example.com',
+    description='A simple talker/listener example',
+    license='Apache-2.0',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'talker = py_hello_world.talker:main',
+            'listener = py_hello_world.listener:main',
+        ],
+    },
+)
+```
+
+Now, place the `talker.py` and `listener.py` code from Week 1 into the `py_hello_world/py_hello_world/` directory.
+
+## Building and Running Your Package
+
+With the package structured correctly, you can now build and run it.
+
+1.  **Build with `colcon`**: From the root of your workspace (`ros2_ws`), run the build command:
+    ```bash
+    colcon build
+    ```
+    Colcon will find all the packages in your `src` directory and build them, placing the output in the `install/` and `build/` directories.
+
+2.  **Source the Workspace**: Before you can run your new nodes, you need to tell your terminal where to find them by sourcing the workspace's setup file.
+    ```bash
+    source install/setup.bash
+    ```
+    **Important**: You must do this in every new terminal you open.
+
+3.  **Run the Nodes**: Now you can run your nodes using `ros2 run`.
+    
+    <Tabs>
+    <TabItem value="terminal1" label="Terminal 1">
+    
+    ```bash
+    ros2 run py_hello_world talker
+    ```
+    You should see the "Publishing..." messages.
+    
+    </TabItem>
+    <TabItem value="terminal2" label="Terminal 2">
+    
+    (Don't forget to `source install/setup.bash` in this new terminal!)
+    ```bash
+    ros2 run py_hello_world listener
+    ```
+    You should see the "I heard..." messages.
+    
+    </TabItem>
+    </Tabs>
+
+## Essential Command-Line Tools
+
+While your nodes are running, you can use these tools in a third terminal to inspect the ROS 2 Graph.
+
+-   **`ros2 node list`**: Shows all currently running nodes.
+    ```bash
+    $ ros2 node list
+    /listener
+    /talker
+    ```
+
+-   **`ros2 topic list`**: Lists all active topics.
+    ```bash
+    $ ros2 topic list
+    /chatter
+    /parameter_events
+    /rosout
+    ```
+
+-   **`ros2 topic echo /chatter`**: Prints the data being published on the `/chatter` topic.
+    ```bash
+    $ ros2 topic echo /chatter
+    data: 'Hello, World!'
+    ---
+    data: 'Hello, World!'
+    ---
+    ```
+
+- **`ros2 node info /talker`**: Shows details about a specific node, including its publications and subscriptions.
+    ```bash
+    $ ros2 node info /talker
+    /talker
+      Subscribers:
+        /parameter_events: rcl_interfaces/msg/ParameterEvent
+      Publishers:
+        /chatter: std_msgs/msg/String
+        /rosout: rcl_interfaces/msg/Log
+      Service Servers:
+        ...
+      Service Clients:
+        ...
+    ```
+
+## Exercises
+
+1.  What is the purpose of the `package.xml` file?
+2.  Why is it necessary to `source` the `install/setup.bash` file in every new terminal?
+3.  Create a new node called `echo_node.py` in your `py_hello_world` package. This node should subscribe to the `/chatter` topic and republish the *exact same message* to a new topic called `/chatter_echo`.
+4.  Build your package again and run all three nodes (`talker`, `listener`, and your new `echo_node`).
+5.  Use `ros2 topic list` and `ros2 topic echo` to verify that your new `/chatter_echo` topic is active and publishing data correctly.

@@ -1,0 +1,142 @@
+---
+sidebar_position: 1
+title: 'Week 1: Introduction to ROS 2'
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Week 1: Introduction to ROS 2
+
+Welcome to the first week of your journey into Physical AI and Humanoid Robotics! This week, we lay the foundation by introducing you to the Robot Operating System (ROS), the de-facto standard framework for robotics development.
+
+## What is ROS?
+
+ROS is not a traditional operating system like Windows or Linux. Instead, it's a flexible framework for writing robot software. It is a collection of tools, libraries, and conventions that aim to simplify the task of creating complex and robust robot behavior across a wide variety of robotic platforms.
+
+Think of it as the plumbing and wiring for your robot. It allows different parts of your robot's software—like the part that processes camera images and the part that controls the motors—to communicate with each other seamlessly, even if they are written in different programming languages or running on different computers.
+
+## Core ROS 2 Concepts
+
+At its heart, ROS 2 is based on a graph architecture where different processes (Nodes) communicate with each other. Let's break down the fundamental concepts.
+
+### 1. Nodes
+
+A **Node** is the smallest unit of computation in ROS 2. You can think of a node as a single program or executable that performs a specific task. For example, you might have one node for controlling a robot's wheel motors, another node for reading from a laser scanner, and a third node for planning a path. Each node is a self-contained unit that can be run, stopped, and modified independently.
+
+### 2. Topics (Pub/Sub Communication)
+
+**Topics** are named buses over which nodes exchange data. They work on a publish-subscribe model.
+
+- **Publisher**: A node that *publishes* (sends) data to a topic. For example, a camera node would publish image data to an `/image_raw` topic.
+- **Subscriber**: A node that *subscribes* to (receives) data from a topic. A separate image processing node could subscribe to the `/image_raw` topic to receive and process the images.
+
+Multiple nodes can publish or subscribe to the same topic, creating a many-to-many communication system. This is the most common method of communication in ROS.
+
+### 3. Services (Request/Response Communication)
+
+**Services** are used for synchronous, two-way communication. They operate on a request-response model, similar to a function call.
+
+- A **Service Server** node offers a service.
+- A **Service Client** node calls the service, sends a request, and waits for a response.
+
+Services are useful when you need to trigger a specific action and get an immediate result, such as "calculate the distance to the nearest obstacle" or "move the robot's arm to a specific position."
+
+### 4. Actions (For Long-Running Tasks)
+
+**Actions** are similar to services but are designed for long-running, asynchronous tasks that provide feedback during execution.
+
+For example, telling a robot to "navigate to the kitchen" is a perfect use case for an action. The task might take several minutes, and you'd want to receive feedback along the way (e.g., "I've left the living room," "I'm in the hallway"). You might also want the ability to cancel the goal.
+
+An Action has three parts:
+- **Goal**: The request to start the long-running task.
+- **Feedback**: Intermediate updates on the task's progress.
+- **Result**: The final outcome of the task.
+
+## The ROS 2 Graph
+
+These components all connect to form what is known as the **ROS 2 Graph**. This is a network of nodes, topics, services, and actions that collectively make up your robot's software system. Visualizing this graph is key to understanding and debugging your robot.
+
+![ROS 2 Graph](https://docs.ros.org/en/foxy/_images/graph-concepts.png)
+*Source: Official ROS 2 Documentation*
+
+## "Hello, World!" in ROS 2 (Python)
+
+Let's create our first ROS 2 program. We'll make two nodes: a publisher that says "Hello, World!" and a subscriber that listens.
+
+<Tabs>
+<TabItem value="publisher" label="Publisher Node (talker.py)">
+
+```python
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class TalkerNode(Node):
+    def __init__(self):
+        super().__init__('talker')
+        self.publisher_ = self.create_publisher(String, 'chatter', 10)
+        self.timer = self.create_timer(1.0, self.timer_callback)
+        self.get_logger().info('Talker node started')
+
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'Hello, World!'
+        self.publisher_.publish(msg)
+        self.get_logger().info(f'Publishing: "{msg.data}"')
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = TalkerNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+This node creates a publisher on the `chatter` topic and publishes a message every second.
+
+</TabItem>
+<TabItem value="subscriber" label="Subscriber Node (listener.py)">
+
+```python
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class ListenerNode(Node):
+    def __init__(self):
+        super().__init__('listener')
+        self.subscription = self.create_subscription(
+            String,
+            'chatter',
+            self.listener_callback,
+            10)
+        self.get_logger().info('Listener node started')
+
+    def listener_callback(self, msg):
+        self.get_logger().info(f'I heard: "{msg.data}"')
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ListenerNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+This node creates a subscriber that listens to the `chatter` topic and prints any message it receives.
+
+</TabItem>
+</Tabs>
+
+To run this, you would save each file, build your ROS 2 package (which we'll cover next week), and run each node in a separate terminal.
+
+## Exercises
+
+1.  What is the main difference between a ROS 2 Topic and a Service?
+2.  When would you choose to use an Action instead of a Service?
+3.  Modify the `TalkerNode` to publish your name instead of "Hello, World!".

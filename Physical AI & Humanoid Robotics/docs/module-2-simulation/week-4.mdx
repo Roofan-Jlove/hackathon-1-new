@@ -1,0 +1,121 @@
+---
+sidebar_position: 1
+title: 'Week 4: Introduction to Gazebo Simulation'
+---
+
+# Week 4: Introduction to Gazebo Simulation
+
+So far, we have written ROS 2 nodes that pass messages around. While useful, it's not very exciting without a robot to control. Building and testing on physical hardware is slow, expensive, and can be dangerous. This is where simulation comes in.
+
+## Why is Simulation Important in Robotics?
+
+Simulation is a critical tool for robotics engineers. It allows you to:
+
+-   **Test Safely**: You can crash a virtual robot a thousand times with no cost or danger. This is essential when testing new control algorithms or AI models.
+-   **Develop Faster**: You can test your code without waiting for hardware to be available or for a robot's battery to charge.
+-   **Parallelize Testing**: You can run hundreds of simulations in the cloud simultaneously to test your robot in a wide variety of scenarios.
+-   **Save Money**: Virtual robots are free. Physical humanoid robots can cost hundreds of thousands of dollars.
+
+## Introduction to Gazebo
+
+**Gazebo** is a powerful, open-source 3D robotics simulator. It allows you to accurately and efficiently simulate populations of robots in complex indoor and outdoor environments.
+
+Key Features:
+-   **Physics Engines**: Gazebo supports multiple high-performance physics engines like ODE, Bullet, and DART.
+-   **Sensor Models**: It can simulate a wide variety of sensors, including cameras, depth cameras, LiDAR, IMUs, and GPS.
+-   **Robot Models**: You can import or build highly detailed models of your robots.
+-   **Graphical Interface**: A GUI allows you to interact with and visualize the simulated world.
+
+## Gazebo and ROS 2: The Bridge
+
+Gazebo itself is a standalone program. To make it useful for us, we need it to communicate with our ROS 2 nodes. This is done using a set of ROS 2 packages called `gazebo_ros_pkgs`.
+
+This package suite acts as a "bridge," translating ROS 2 messages into commands Gazebo understands, and translating Gazebo's simulation data (like sensor readings) back into ROS 2 messages.
+
+When you run Gazebo with the ROS 2 bridge, you will see several topics appear automatically, such as:
+-   `/clock`: Provides a simulated time source. This is crucial for ensuring all nodes in your simulation are synchronized.
+-   `/tf` and `/tf_static`: Publish the transforms between different coordinate frames in the simulation.
+-   `/gazebo/performance_metrics`: Publishes data about the performance of the simulation itself.
+
+## SDF: The Language of Simulation
+
+Everything inside a Gazebo simulation—the robot, the furniture, the lights, the sensors—is defined using the **Simulation Description Format (SDF)**. SDF is an XML-based format that is verbose but highly descriptive.
+
+Here is a very simple SDF file that describes a single, static red box:
+
+```xml
+<?xml version='1.0'?>
+<sdf version='1.7'>
+  <world name='default'>
+    <model name='unit_box'>
+      <pose>0 0 0.5 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+      <static>true</static>
+    </model>
+  </world>
+</sdf>
+```
+Don't worry about understanding all of this yet. The key takeaway is that SDF is the language we use to build our virtual worlds and robots.
+
+## Hands-On Lab: Your First Simulation
+
+### 1. Launch Gazebo
+
+Gazebo comes with several pre-built worlds. You can launch an empty world from your terminal.
+
+```bash
+gazebo --verbose empty.world
+```
+This will open the Gazebo GUI, showing an empty world with a ground plane.
+
+### 2. Explore the GUI
+
+-   **Add Shapes**: In the top toolbar, you will find options to add simple shapes like spheres, boxes, and cylinders. Click one and then click on the ground plane to add it to the world.
+-   **Manipulate Objects**: Use the tools in the left-hand toolbar to translate (move), rotate, and scale the objects you've added.
+
+### 3. Inspect with ROS 2
+
+While Gazebo is running, open a new terminal and source your ROS 2 installation. Now, use the ROS 2 command-line tools to see the bridge in action.
+
+```bash
+# See the Gazebo node
+$ ros2 node list
+/gazebo
+
+# See the topics published by Gazebo
+$ ros2 topic list
+/clock
+/parameter_events
+/rosout
+/tf_static
+...
+
+# Echo the clock topic to see simulated time
+$ ros2 topic echo /clock
+sec: 120
+nanosec: 34000000
+---
+sec: 120
+nanosec: 44000000
+---
+```
+
+## Exercises
+
+1.  What is the primary benefit of using simulation in robotics?
+2.  What role does the `gazebo_ros_pkgs` package play?
+3.  Launch Gazebo with a different world, for example: `gazebo --verbose shapes.world`.
+4.  Why is the `/clock` topic essential for running a reliable simulation?

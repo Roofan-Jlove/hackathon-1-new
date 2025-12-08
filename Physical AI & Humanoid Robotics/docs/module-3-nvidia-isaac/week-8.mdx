@@ -1,0 +1,94 @@
+---
+sidebar_position: 2
+title: 'Week 8: ROS 2 Integration with Isaac Sim'
+---
+
+# Week 8: ROS 2 Integration with Isaac Sim
+
+Last week, you got your first taste of NVIDIA Isaac Sim. This week, we dive deeper into making Isaac Sim a fully integrated ROS 2 development environment. We'll learn how to spawn and control our URDF robots within Isaac Sim, and how to stream sensor data from the simulation into ROS 2, just like we would from a real robot.
+
+## Spawning URDF Robots in Isaac Sim
+
+Isaac Sim fully supports URDF, making it easy to bring your existing robot models into the simulation. You can either import them directly through the UI or, more powerfully, programmatically via Python scripts or ROS 2 launch files.
+
+### Using the Python API to Spawn a URDF
+
+Isaac Sim provides a rich Python API to interact with the simulation. Here's a simplified example of how you might spawn a URDF:
+
+```python
+import omni
+from omni.isaac.core.utils.nucleus import get_assets_root_path
+from omni.isaac.core.articulations import Articulation
+from omni.isaac.core.utils.prims import create_prim
+
+# Get the path to Isaac Sim assets
+assets_root_path = get_assets_root_path()
+asset_path = assets_root_path + "/Isaac/Robots/Franka/franka.usd" # Example Franka robot
+
+# Create a new prim to hold our robot
+robot_prim_path = "/World/Franka"
+create_prim(robot_prim_path)
+
+# Load the robot from its USD path (which can be generated from URDF)
+my_robot = Articulation(
+    prim_path=robot_prim_path,
+    usd_path=asset_path,
+    position=omni.usd.utils.create_vec3d(0.0, 0.0, 0.5)
+)
+
+# You can also directly load URDF files
+# from omni.isaac.urdf import _urdf
+# my_urdf_importer = _urdf.acquire_urdf_interface()
+# my_urdf_importer.parse_urdf(...)
+```
+More commonly, especially with complex robots, you'll convert your URDF to a USD file and load that. Isaac Sim can also integrate directly with `ros2_control` and `robot_state_publisher` for advanced control.
+
+## Controlling Robots via ROS 2 Topics
+
+Isaac Sim provides extensions that enable direct control of robots via standard ROS 2 topics. For instance, the `omni.isaac.diff_drive` extension allows you to control a differential drive robot by subscribing to the `/cmd_vel` topic, just like in Gazebo.
+
+To use it:
+1.  **Enable the `omni.isaac.diff_drive` extension** in Isaac Sim.
+2.  Ensure your robot model has appropriate joint names that the extension can map to (typically `left_wheel_joint` and `right_wheel_joint`).
+3.  The extension will automatically subscribe to `/cmd_vel` and apply forces to the robot's wheels.
+
+## Reading Sensor Data from Isaac Sim into ROS 2
+
+Just like in Gazebo, Isaac Sim can publish sensor data directly to ROS 2 topics.
+
+### Camera Sensor
+
+1.  **Add a Camera**: In Isaac Sim, add a `Camera` from the `Create` menu (e.g., `Create -> Camera`). Position it on your robot model.
+2.  **Add ROS 2 Bridge Component**: Select the camera in the Stage panel. In the Property tab, search for "ROS" and add the `ROS2 Camera` component.
+3.  **Configure**: Set the ROS 2 topic name (e.g., `/robot/camera/image_raw`), image width, height, and other parameters.
+4.  **Visualize**: Once enabled, the camera will publish `sensor_msgs/Image` messages to the specified topic, which you can visualize in RViz2.
+
+### LiDAR Sensor
+
+Isaac Sim also provides a `Lidar` prim that can be configured to publish `sensor_msgs/LaserScan` messages to ROS 2.
+
+1.  **Add a Lidar**: `Create -> Isaac -> Sensors -> Lidar`. Position it on your robot.
+2.  **Add ROS 2 Bridge Component**: Add the `ROS2 Lidar` component to the Lidar prim.
+3.  **Configure**: Set the topic name (e.g., `/robot/scan`) and other Lidar-specific parameters.
+
+## Hands-On Lab: Drive and Sense in Isaac Sim
+
+1.  **Import and Spawn a URDF Robot**: Load a simple differential drive robot (e.g., the `simple_robot.urdf` from Week 5). You might need to convert it to a USD or use Isaac Sim's URDF importer. Place it in a simple Isaac Sim stage.
+2.  **Enable Differential Drive**: Ensure the `omni.isaac.diff_drive` extension is enabled and configured for your robot's wheel joints.
+3.  **Drive from ROS 2**:
+    - Open a terminal and source your ROS 2 environment.
+    - Publish `geometry_msgs/msg/Twist` messages to the robot's `/cmd_vel` topic (e.g., using `ros2 topic pub`).
+    - Observe your robot moving in Isaac Sim.
+4.  **Add and Configure a Camera Sensor**:
+    - Add a `Camera` prim to your robot model in Isaac Sim.
+    - Add the `ROS2 Camera` component and configure it to publish to `/robot/camera/image_raw`.
+5.  **Visualize in RViz2**:
+    - Launch RViz2 (`ros2 run rviz2 rviz2`).
+    - Add an `Image` display and subscribe to `/robot/camera/image_raw`. You should see the robot's view.
+
+## Exercises
+
+1.  Experiment with the parameters of the `omni.isaac.diff_drive` extension. How do changes to `wheel_radius` or `wheel_base` affect the robot's motion?
+2.  Add a `Lidar` sensor to your robot in Isaac Sim. Configure it to publish to a ROS 2 `/robot/scan` topic.
+3.  Visualize the LiDAR data in RViz2 using a `LaserScan` display. Drive your robot towards an object and observe the LiDAR readings.
+4.  What are some advanced applications of Isaac Sim's Python API for robot control or sensor simulation?
