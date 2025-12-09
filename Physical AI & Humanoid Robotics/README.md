@@ -47,6 +47,12 @@ This command starts a local development server and automatically opens a browser
 
 ## Building the Book (Production)
 
+
+RUN CAMMAND on LOCAL:
+
+node .\node_modules\@docusaurus\core\bin\docusaurus.mjs start
+
+
 To generate static content for production deployment:
 
 ```bash

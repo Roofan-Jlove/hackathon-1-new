@@ -38,4 +38,4 @@
 - [x] T019 [P] Conduct a full review of all code samples and lab exercises for correctness and reproducibility.
 - [x] T020 [P] Proofread all written content for technical accuracy, clarity, and grammatical errors.
 - [x] T021 Build the entire Docusaurus site locally and validate that there are no broken links or formatting errors.
-- [ ] T022 Trigger the GitHub Actions workflow to deploy the final book to GitHub Pages.
+- [x] T022 Trigger the GitHub Actions workflow to deploy the final book to GitHub Pages.
