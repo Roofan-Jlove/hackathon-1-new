@@ -1,6 +1,6 @@
-# Physical AI & Humanoid Robotics Book
+# Physical-AI-Humanoid-Robotics Book
 
-This is the official repository for the "Physical AI & Humanoid Robotics" book, built using Docusaurus. This book explores modern robotics concepts, simulation with Gazebo and NVIDIA Isaac Sim, and cutting-edge Vision-Language-Action (VLA) pipelines, all within a Spec-Driven Development framework.
+This is the official repository for the "Physical-AI-Humanoid-Robotics" book, built using Docusaurus. This book explores modern robotics concepts, simulation with Gazebo and NVIDIA Isaac Sim, and cutting-edge Vision-Language-Action (VLA) pipelines, all within a Spec-Driven Development framework.
 
 ## Getting Started
 
@@ -24,7 +24,7 @@ For detailed environment setup, including ROS 2 and simulation tools, please ref
     ```
 2.  **Navigate to the book's directory:**
     ```bash
-    cd "Physical AI & Humanoid Robotics"
+    cd "Physical-AI-Humanoid-Robotics"
     ```
 3.  **Install dependencies:**
     ```bash
@@ -38,7 +38,7 @@ For detailed environment setup, including ROS 2 and simulation tools, please ref
 To run the book in a local development server with live reloading:
 
 ```bash
-cd "Physical AI & Humanoid Robotics"
+cd "Physical-AI-Humanoid-Robotics"
 npm start
 # or:
 # yarn start
@@ -48,15 +48,13 @@ This command starts a local development server and automatically opens a browser
 ## Building the Book (Production)
 
 
-RUN CAMMAND on LOCAL:
 
-node .\node_modules\@docusaurus\core\bin\docusaurus.mjs start
 
 
 To generate static content for production deployment:
 
 ```bash
-cd "Physical AI & Humanoid Robotics"
+cd "Physical-AI-Humanoid-Robotics"
 npm run build
 # or:
 # yarn build

@@ -4,7 +4,7 @@
 
 ## Phase 1: Foundation (Book Scaffolding)
 
-- [x] T001 Initialize a new Docusaurus project in the "Physical AI & Humanoid Robotics" directory.
+- [x] T001 Initialize a new Docusaurus project in the "Physical-AI-Humanoid-Robotics" directory.
 - [x] T002 Configure `docusaurus.config.ts` with the book's title, navigation bar, and footer.
 - [x] T003 [P] Create the main `docs/` directory structure for all 4 modules and the capstone project.
 - [x] T004 [P] Configure `sidebars.ts` to reflect the Module and Week hierarchy.
