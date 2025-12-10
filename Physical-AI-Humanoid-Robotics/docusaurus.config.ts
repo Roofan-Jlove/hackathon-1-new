@@ -17,8 +17,8 @@ const config: Config = {
   // Set the production url of your site here
   url: 'https://Rofan-Jlove.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/hackathon-1-new/',
+  // For Vercel deployment, it is often '/'
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   organizationName: 'Rofan-Jlove', // Usually your GitHub org/user name.
