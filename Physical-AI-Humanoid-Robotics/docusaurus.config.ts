@@ -91,6 +91,10 @@ const config: Config = {
           title: 'Community',
           items: [
             {
+              label: 'LinkedIn',
+              href: 'https://www.linkedin.com/feed/',
+            },
+            {
               label: 'Discord',
               href: 'https://discordapp.com/invite/docusaurus',
             },
