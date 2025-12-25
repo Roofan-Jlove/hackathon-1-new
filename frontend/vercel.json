@@ -8,8 +8,5 @@
       "source": "/(.*)",
       "destination": "/$1"
     }
-  ],
-  "env": {
-    "DOCUSAURUS_BACKEND_API_URL": "@backend_api_url"
-  }
+  ]
 }
