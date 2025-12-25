@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "app/main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
     }
   ],
   "routes": [
@@ -16,6 +19,9 @@
     "OPENAI_API_KEY": "@openai_api_key",
     "NEON_DATABASE_URL": "@neon_database_url",
     "QDRANT_URL": "@qdrant_url",
-    "QDRANT_API_KEY": "@qdrant_api_key"
+    "QDRANT_API_KEY": "@qdrant_api_key",
+    "SECRET_KEY": "@secret_key",
+    "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_EXPIRE_MINUTES": "30"
   }
 }

@@ -10,7 +10,15 @@ export default function ContentWrapper(props: Props): ReactNode {
   return (
     <>
       <Content {...props} />
-      <AuthButtons />
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 'auto',
+        flexShrink: 0
+      }}>
+        <AuthButtons />
+      </div>
     </>
   );
 }

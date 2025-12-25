@@ -29,7 +29,7 @@ function HomepageHeader() {
             <span className={styles.indexCtasGitHubButtonWrapper}>
               <Link
                 className="button button--primary button--outline button--lg"
-                href="https://github.com/Rofan-Jlove/hackathon-1-new">
+                href="https://github.com/Roofan-Jlove/hackathon-1-new">
                 GitHub
               </Link>
             </span>

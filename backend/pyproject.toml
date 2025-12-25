@@ -1,29 +1,27 @@
-[project]
+[tool.poetry]
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Rofan-Jlove",email = "kannethchamp@gmail.com"}
-]
+authors = ["Rofan-Jlove <kannethchamp@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "fastapi (>=0.124.2,<0.125.0)",
-    "uvicorn[standard] (>=0.38.0,<0.39.0)",
-    "langchain",
-    "langchain-community",
-    "langchain-openai",
-    "qdrant-client",
-    "sentence-transformers",
-    "google-cloud-translate",
-    "psycopg2-binary",
-    "python-dotenv", # Needed for os.getenv calls
-    "openai", # Explicitly adding openai
-    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
-    "python-jose[cryptography] (>=3.5.0,<4.0.0)",
-    "bcrypt (==4.0.1)"
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = ">=0.124.2,<0.125.0"
+uvicorn = {extras = ["standard"], version = ">=0.38.0,<0.39.0"}
+langchain = "*"
+langchain-community = "*"
+langchain-openai = "*"
+qdrant-client = "*"
+sentence-transformers = "*"
+google-cloud-translate = "*"
+psycopg2-binary = "*"
+python-dotenv = "*"
+openai = "*"
+passlib = {extras = ["bcrypt"], version = ">=1.7.4,<2.0.0"}
+python-jose = {extras = ["cryptography"], version = ">=3.5.0,<4.0.0"}
+bcrypt = "4.0.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -12,7 +12,16 @@ export default function AuthButtons() {
 
   if (user) {
     return (
-      <div className={styles.authButtons}>
+      <div
+        className={styles.authButtons}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: '1rem',
+          flexWrap: 'nowrap'
+        }}
+      >
         <Link to="/profile" className={styles.profileLink}>
           <span className={styles.userEmail}>{user.email}</span>
         </Link>
@@ -28,7 +37,16 @@ export default function AuthButtons() {
   }
 
   return (
-    <div className={styles.authButtons}>
+    <div
+      className={styles.authButtons}
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: '1rem',
+        flexWrap: 'nowrap'
+      }}
+    >
       <Link to="/signin" className={styles.signinLink}>
         Sign In
       </Link>

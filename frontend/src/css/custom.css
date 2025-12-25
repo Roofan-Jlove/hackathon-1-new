@@ -76,3 +76,124 @@ div[class*="docItem"] {
   background: #18191a !important;
   color: #e0e0e0;
 }
+
+/* Modern Footer Styling - Match Hero Section */
+.footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 100%) !important;
+  color: #004e89 !important;
+  padding: 2rem 0 1rem 0 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(252, 70, 107, 0.3), transparent 50%);
+  pointer-events: none;
+}
+
+.footer .container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+.footer .container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(252, 70, 107, 0.3), transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.footer__title {
+  color: #004e89 !important;
+  font-weight: 800 !important;
+  font-size: 1.2rem !important;
+  margin-bottom: 1rem !important;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.footer__item {
+  color: #004e89 !important;
+  transition: all 0.2s ease !important;
+}
+
+.footer__link-item {
+  color: #004e89 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+  font-weight: 500;
+}
+
+.footer__link-item:hover {
+  color: #003366 !important;
+  text-decoration: underline !important;
+}
+
+.footer__copyright {
+  color: #004e89 !important;
+  margin-top: 2rem !important;
+  padding-top: 1.5rem !important;
+  border-top: 1px solid rgba(0, 78, 137, 0.3) !important;
+  text-align: center !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+  font-weight: 400;
+}
+
+/* Dark Mode Footer */
+[data-theme='dark'] .footer {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 100%) !important;
+  color: white !important;
+}
+
+[data-theme='dark'] .footer::before {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(83, 52, 131, 0.4), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(15, 52, 96, 0.4), transparent 50%);
+}
+
+[data-theme='dark'] .footer__title {
+  color: white !important;
+}
+
+[data-theme='dark'] .footer__item {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme='dark'] .footer__link-item {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-theme='dark'] .footer__link-item:hover {
+  color: white !important;
+}
+
+[data-theme='dark'] .footer__copyright {
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme='dark'] .footer .container::before {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(83, 52, 131, 0.4), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(15, 52, 96, 0.4), transparent 50%);
+}
+

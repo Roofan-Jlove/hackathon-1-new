@@ -15,13 +15,13 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://Rofan-Jlove.github.io',
+  url: 'https://Roofan-Jlove.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For Vercel deployment, it is often '/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
-  organizationName: 'Rofan-Jlove', // Usually your GitHub org/user name.
+  organizationName: 'Roofan-Jlove', // Usually your GitHub org/user name.
   projectName: 'hackathon-1-new', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -78,7 +78,7 @@ const config: Config = {
           label: 'Modules',
         },
         {
-          href: 'https://github.com/Rofan-Jlove/hackathon-1-new',
+          href: 'https://github.com/Roofan-Jlove/hackathon-1-new',
           label: 'GitHub',
           position: 'right',
         },
@@ -103,14 +103,6 @@ const config: Config = {
               label: 'LinkedIn',
               href: 'https://www.linkedin.com/feed/',
             },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
           ],
         },
         {
@@ -118,7 +110,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/Rofan-Jlove/hackathon-1-new',
+              href: 'https://github.com/Roofan-Jlove/hackathon-1-new',
             },
           ],
         },

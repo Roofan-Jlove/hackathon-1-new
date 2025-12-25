@@ -1,7 +1,9 @@
 .authButtons {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   align-items: center;
   gap: 1rem;
+  flex-wrap: nowrap !important;
 }
 
 .signinLink {
@@ -75,21 +77,26 @@
 /* Mobile responsive */
 @media (max-width: 996px) {
   .authButtons {
-    flex-direction: column;
-    width: 100%;
-    padding: 1rem 0;
+    flex-direction: row !important; /* Force horizontal */
+    gap: 0.5rem !important;
+    padding: 0.5rem 0;
+    flex-wrap: nowrap !important;
   }
 
   .signinLink,
   .signupLink,
-  .profileLink,
   .signoutButton {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+
+  .profileLink {
+    padding: 0.4rem 0.8rem;
   }
 
   .userEmail {
-    max-width: none;
+    max-width: 100px;
+    font-size: 0.85rem;
   }
 }
