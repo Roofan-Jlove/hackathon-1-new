@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info:
+  title: Chat API
+  version: 1.0.0
+paths:
+  /chat:
+    post:
+      summary: Ask a question to the RAG chatbot
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  example: "What is a ROS 2 node?"
+                context:
+                  type: string
+                  description: "Optional user-selected text from the book for context-specific questions."
+                  example: "A Node is the smallest unit of computation in ROS 2."
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: "A ROS 2 node is a fundamental processing unit..."
+                  sources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chunk:
+                          type: string
+                        score:
+                          type: number
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

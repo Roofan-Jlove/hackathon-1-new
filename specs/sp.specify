@@ -1,0 +1,77 @@
+# Specification for RAG Chatbot Integration
+
+## Overview
+This document specifies the technical requirements for integrating a RAG chatbot into the Docusaurus book project.
+
+## System Architecture
+- Frontend: React component embedded in Docusaurus pages
+- Backend: FastAPI server with OpenAI integration
+- Vector Database: Qdrant Cloud (free tier)
+- Relational Database: Neon Serverless Postgres
+- Authentication: Optional (for conversation history)
+
+## Frontend Requirements
+- Floating chat widget that can be toggled open/closed
+- Text selection integration to ask questions about selected content
+- Clean, modern UI that matches the book's design
+- Responsive design for all device sizes
+- Conversation history display
+- Loading indicators during processing
+
+## Backend Requirements
+- FastAPI application with async support
+- OpenAI API integration for chat completions
+- Document chunking and embedding functionality
+- RAG retrieval mechanism to find relevant context
+- API endpoints for:
+  - Chat completions
+  - Document indexing
+  - Conversation history
+  - Text selection queries
+
+## Database Requirements
+- Neon Serverless Postgres for:
+  - User sessions (if implemented)
+  - Conversation history
+  - Document metadata
+  - User preferences (if needed)
+
+## Vector Database Requirements
+- Qdrant Cloud (free tier) for:
+  - Document embeddings
+  - Semantic search capabilities
+  - Context retrieval
+
+## API Specification
+### Chat Endpoint
+- Method: POST
+- Path: /api/chat
+- Request: {message: string, selectedText?: string, sessionId?: string}
+- Response: {response: string, sources?: Array, sessionId: string}
+
+### Index Document Endpoint
+- Method: POST
+- Path: /api/index
+- Request: {document: string, metadata: object}
+- Response: {success: boolean, documentId: string}
+
+### Search Endpoint
+- Method: POST
+- Path: /api/search
+- Request: {query: string, limit: number}
+- Response: {results: Array}
+
+## Security Requirements
+- API key management for OpenAI and Qdrant
+- Rate limiting to prevent abuse
+- Input sanitization to prevent injection attacks
+
+## Performance Requirements
+- Response time under 3 seconds for 95% of requests
+- Support for concurrent users
+- Efficient document retrieval from vector database
+
+## Deployment Requirements
+- Backend can be deployed to serverless platform or containerized
+- Frontend component integrates seamlessly with Docusaurus
+- Configuration via environment variables

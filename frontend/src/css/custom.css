@@ -1,0 +1,78 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #1c6bb0; /* A nice, techy blue */
+  --ifm-color-primary-dark: #195f9e;
+  --ifm-color-primary-darker: #185a96;
+  --ifm-color-primary-darkest: #13497a;
+  --ifm-color-primary-light: #1f77c2;
+  --ifm-color-primary-lighter: #217dca;
+  --ifm-color-primary-lightest: #2a8dd9;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #54a9f5; /* A lighter blue for dark mode */
+  --ifm-color-primary-dark: #379bf3;
+  --ifm-color-primary-darker: #2b95f2;
+  --ifm-color-primary-darkest: #0d81f0;
+  --ifm-color-primary-light: #71b7f7;
+  --ifm-color-primary-lighter: #7dbef8;
+  --ifm-color-primary-lightest: #a0cffb;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Additional CSS for documentation pages */
+main.main-content {
+  background: white;
+}
+
+article.doc-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Default body background for docs pages when not on homepage */
+body:not(.homepage):not(.index-page) {
+  background: white;
+  color: #222;
+}
+
+/* More specific selectors for documentation pages */
+body[class*="docs-doc-page"] {
+  background: white !important;
+  color: #222;
+}
+
+/* Content areas in documentation */
+.markdown,
+.doc-content,
+article,
+.container,
+div[class*="docItem"] {
+  background: white !important;
+  color: #222;
+}
+
+/* Dark mode for doc content */
+[data-theme="dark"] body:not(.homepage):not(.index-page) {
+  background: #18191a !important;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .markdown,
+[data-theme="dark"] .doc-content,
+[data-theme="dark"] article,
+[data-theme="dark"] .container,
+[data-theme="dark"] div[class*="docItem"] {
+  background: #18191a !important;
+  color: #e0e0e0;
+}

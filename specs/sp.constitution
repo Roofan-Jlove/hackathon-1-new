@@ -1,0 +1,38 @@
+# Constitution for RAG Chatbot Integration in Docusaurus Book
+
+## Mission Statement
+To build and embed a retrieval-Augmented Generation (RAG) chatbot within the published book that can answer user questions about the book's content, including answering questions based only on text selected by the user.
+
+## Core Values
+1. User Experience - Prioritize intuitive, helpful interactions
+2. Accuracy - Ensure responses are grounded in the book's content
+3. Privacy - Protect user interactions and data
+4. Performance - Maintain fast response times
+5. Scalability - Design for growth and future enhancements
+
+## Principles
+1. All responses must be grounded in the book's content through RAG
+2. Selected text functionality allows users to ask specific questions
+3. The system must be responsive and accessible
+4. Integration should be seamless with the existing Docusaurus structure
+5. Data persistence and security are paramount
+
+## Scope
+- Integration of a RAG chatbot into the Docusaurus book
+- Backend API using FastAPI
+- Vector storage using Qdrant Cloud
+- Database using Neon Serverless Postgres
+- Frontend component for user interaction
+- Text selection and context-aware responses
+
+## Constraints
+- Use OpenAI Agents/Chatkit SDKs for chatbot functionality
+- Deploy on existing infrastructure
+- Comply with free tier limitations of Qdrant Cloud
+- Maintain existing site performance
+
+## Success Metrics
+- Accuracy of responses compared to source material
+- Response time < 3 seconds
+- User satisfaction scores
+- Successful integration with existing Docusaurus site

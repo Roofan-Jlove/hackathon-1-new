@@ -1,0 +1,27 @@
+/* CSS for documentation pages to have white background */
+/* This targets pages with doc content */
+
+html.doc-page,
+body.DocSearch--active,
+article[class*="docItemContainer"] {
+    background: white !important;
+}
+
+/* Ensure content area is white on doc pages */
+.main-wrapper,
+.doc-page {
+    background: white !important;
+}
+
+/* For the content container on doc pages */
+article.doc-content,
+div.docItemWrapper,
+main.main-content {
+    background: white !important;
+    color: #222;
+}
+
+/* Override any blue backgrounds on doc pages */
+article :not(.heroBanner) {
+    background: white !important;
+}

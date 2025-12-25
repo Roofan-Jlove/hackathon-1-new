@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(poetry install)",
+      "Bash(tree -L 2 -I 'node_modules':*)",
+      "Bash(python -m app.main:*)",
+      "Bash(python:*)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(pip show:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(timeout:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(dir:*)",
+      "Bash(ping:*)",
+      "Bash(npm start)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(pip install:*)",
+      "Bash(alembic init:*)",
+      "Bash(alembic revision:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(uvicorn app.main:app:*)",
+      "Bash(chmod:*)",
+      "Bash(bash .claude/skills/auth.sh:*)",
+      "Bash(poetry --version:*)",
+      "Bash(poetry run uvicorn:*)",
+      "Bash(poetry add:*)",
+      "Bash(gh auth:*)",
+      "Bash(git config:*)",
+      "Bash(git reset:*)"
+    ]
+  }
+}

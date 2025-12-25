@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: Translation API
+  version: 1.0.0
+paths:
+  /translate:
+    post:
+      summary: Translate chapter content to Urdu
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  example: "This is the content of the chapter..."
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  translated_text:
+                    type: string
+                    example: "یہ باب کا مواد ہے..."
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,218 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+/* For landing page container */
+.landingPageContainer {
+  background:
+    linear-gradient(135deg, #1c6bb0 0%, #004e89 50%, #0099cc 100%);
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Hero banner styling - with blue gradient background */
+.heroBanner {
+  padding: 2rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, #1c6bb0 0%, #004e89 50%, #0099cc 100%);
+  color: white;
+  margin-bottom: 2rem;
+}
+
+/* Landing page container in dark mode */
+[data-theme='dark'] .landingPageContainer {
+  background:
+    linear-gradient(135deg, #0a2a4d 0%, #081f3d 50%, #0a3d6b 100%);
+}
+
+/* Dark mode specific overrides for the landing page */
+[data-theme='dark'] .heroBanner {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+[data-theme='dark'] .mainContent {
+  background: rgba(30, 30, 30, 0.9) !important;
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .moduleCardInner {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .moduleCardTitle {
+  color: #5dade2;
+}
+
+[data-theme='dark'] .heroTitle {
+  color: white;
+}
+
+[data-theme='dark'] .heroSubtitle {
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .moduleCardBody {
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .moduleCardFooter {
+  border-top: 1px solid #555;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem 1rem;
+  }
+}
+
+.heroInner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #e0e0e0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.indexCtas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.indexCtas .button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.indexCtasGitHubButtonWrapper {
+  margin-left: 1rem;
+}
+
+@media (max-width: 574px) {
+  .indexCtas {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .indexCtasGitHubButtonWrapper {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+}
+
+/* Modules section - white background */
+.mainContent {
+  background: white; /* Solid white background as requested */
+  padding: 2rem 0;
+  min-height: calc(100vh - 200px);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -0.5rem;
+}
+
+.modulesSection {
+  padding: 2rem 0;
+}
+
+.moduleCard {
+  padding: 0.5rem;
+  height: 100%;
+}
+
+.moduleCardInner {
+  background: white; /* Solid white since main content is white */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 220px;
+}
+
+.moduleCardInner:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.moduleCardHeader {
+  padding: 1rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.moduleCardTitle {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #004e89; /* Darker blue for better readability on light card background */
+}
+
+.moduleCardBody {
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #222; /* Dark text for readability on white background */
+}
+
+.moduleCardFooter {
+  padding: 0.5rem 1rem 1rem 1rem;
+  margin-top: auto;
+}
+
+/* Capstone project card */
+.capstoneCard {
+  border-left: 5px solid #00a6ed !important;
+}
+
+.capstoneTitle {
+  color: #00a6ed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 996px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .col.col--3 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 1.5rem;
+  }
+}

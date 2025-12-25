@@ -1,0 +1,95 @@
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.signinLink {
+  padding: 0.5rem 1rem;
+  color: var(--ifm-navbar-link-color);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.signinLink:hover {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-navbar-link-hover-color);
+}
+
+.signupLink {
+  padding: 0.5rem 1rem;
+  background: var(--ifm-color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.signupLink:hover {
+  background: var(--ifm-color-primary-dark);
+  color: white;
+}
+
+.profileLink {
+  padding: 0.5rem 1rem;
+  color: var(--ifm-navbar-link-color);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profileLink:hover {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-navbar-link-hover-color);
+}
+
+.userEmail {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signoutButton {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--ifm-navbar-link-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.signoutButton:hover {
+  background: var(--ifm-color-danger);
+  color: white;
+  border-color: var(--ifm-color-danger);
+}
+
+/* Mobile responsive */
+@media (max-width: 996px) {
+  .authButtons {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .signinLink,
+  .signupLink,
+  .profileLink,
+  .signoutButton {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .userEmail {
+    max-width: none;
+  }
+}
