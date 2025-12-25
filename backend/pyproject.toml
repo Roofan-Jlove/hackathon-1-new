@@ -48,6 +48,3 @@ passlib = {extras = ["bcrypt"], version = ">=1.7.4,<2.0.0"}
 python-jose = {extras = ["cryptography"], version = ">=3.5.0,<4.0.0"}
 bcrypt = "4.0.1"
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
