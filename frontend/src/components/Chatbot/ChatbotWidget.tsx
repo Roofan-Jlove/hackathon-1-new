@@ -89,6 +89,10 @@ const ChatbotWidget: React.FC = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      // Add timeout for slow backend wake-up (Railway free tier sleeps after inactivity)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
       const response = await fetch(`${apiBaseUrl}/api/chat`, {
         method: 'POST',
         headers,
@@ -97,7 +101,10 @@ const ChatbotWidget: React.FC = () => {
           context: selectedText || undefined, // Include selected text as context if available
           conversation_id: conversationId || undefined,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -118,10 +125,20 @@ const ChatbotWidget: React.FC = () => {
       
     } catch (error: any) {
       console.error('Chatbot API error:', error);
+      let errorText = 'Could not get response.';
+
+      if (error.name === 'AbortError') {
+        errorText = 'Request timed out. The backend service may be waking up from sleep. Please try again in a moment.';
+      } else if (error.message.includes('Failed to fetch')) {
+        errorText = 'Failed to connect to the backend. The service may be starting up. Please try again in a few seconds.';
+      } else {
+        errorText = error.message || errorText;
+      }
+
       const errorMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `Error: ${error.message || 'Could not get response.'}`,
+        content: `Error: ${errorText}`,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
